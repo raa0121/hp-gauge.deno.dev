@@ -42,11 +42,11 @@ export default function App() {
     
       if (navigationType === 'reload') {
         const data = storage.getUserData();
-        const oldHp = parseInt(data.maxHp, 10);
-        const oldDamage = parseInt(data.damage, 10);
-        setMaxHp(oldHp);
-        setHp(oldHp);
-        setDamage(oldDamage);
+        if (data !== undefined) {
+          setMaxHp(data.maxHp);
+          setHp(data.maxHp);
+          setDamage(data.damage);
+        }
       }
     }
   }, []);
@@ -57,8 +57,8 @@ export default function App() {
       e.preventDefault();
       return;
     }
-    setMaxHp(`${newValue}`)
-    setHp(`${newValue}`);
+    setMaxHp(newValue);
+    setHp(newValue);
   };
 
   const changeDamageNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +67,7 @@ export default function App() {
       e.preventDefault();
       return;
     }
-    setDamage(`${newValue}`);
+    setDamage(newValue);
   };
 
   const keyDownNumber = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -135,9 +135,9 @@ export default function App() {
             <input
               id="hp"
               type="number"
-              defaultValue="100"
               onChange={changeHpNumber}
               onKeyDown={keyDownNumber}
+              value={maxHp}
             ></input>
           </div>
           <div id="damage-group">
@@ -145,9 +145,9 @@ export default function App() {
             <input
               id="damage"
               type="number"
-              defaultValue="5"
               onChange={changeDamageNumber}
               onKeyDown={keyDownNumber}
+              value={damage}
             ></input>
             <button
               type="button"
