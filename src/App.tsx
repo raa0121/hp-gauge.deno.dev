@@ -1,6 +1,12 @@
 import './App.css';
+import './App.soul.css';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useBlocker, useSessionStorage } from "./hooks.tsx";
+
+interface QueryString {
+  [key: string]: string;
+}
 
 const ALLOWD = [
   '-',
@@ -24,7 +30,12 @@ export default function App() {
   const [backGauge, setBackGauge] = useState(100);
   const [fadeout, setFadeout] = useState('');
   const [isWeek, setIsWeek] = useState(false);
+  const [mode, setMode] = useState('fight');
+  const [name, setName] = useState('');
+  const search = useLocation().search;
   const storage = useSessionStorage();
+
+  const query = new URLSearchParams(search);
 
   useEffect(() => {
     globalThis.addEventListener("animationstart", () => {
@@ -35,6 +46,15 @@ export default function App() {
       setFadeout("");
       setIsAnimation(false);
     });
+    console.log(query);
+
+    setName(query.get('name'));
+    if ("fight" == query.get('mode')) {
+      clickFight();
+    }
+    if ("soul" == query.get('mode')) {
+      clickSoul();
+    }
     const navigationEntries = performance.getEntriesByType("navigation");
     
     if (navigationEntries.length > 0 && navigationEntries[0] instanceof PerformanceNavigationTiming) {
@@ -51,6 +71,9 @@ export default function App() {
     }
   }, []);
 
+  const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  }
   const changeHpNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value, 10);
     if (isNaN(newValue)) {
@@ -102,51 +125,80 @@ export default function App() {
     setFadeout(" fadeout");
   };
 
+  const clickFight = () => {
+    document.body.style.backgroundColor = "white";
+    document.body.style.color = "black";
+    setMode('fight');
+    query.set('mode', 'fight');
+  }
+
+  const clickSoul = () => {
+    setMode('soul');
+    document.body.style.backgroundColor = "black";
+    document.body.style.color = "white";
+    query.set('mode', 'soul');
+  }
+
   useBlocker(() => {
     storage.setUserData({maxHp, damage});
   }, true);
 
   return (
     <>
-      <main>
-        <h1 id="title" className="stalinist-one-regular">{title}</h1>
-        <div id="counter-group">
-          <div id="gauge-container">
-            <div id="background">
-              <div id="background-top"></div>
-              <div id="background-bottom"></div>
-              <div id="back-gauge" className={gaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
-              <div id="front-gauge" className={gaugeMode} style={{width: frontGauge + "%"}}></div>
-              <div id="frame">
-                <div id="triangle-tl"></div>
-                <div id="triangle-tr"></div>
-                <div id="triangle-bl"></div>
-                <div id="triangle-br"></div>
+      <main id={mode}>
+        <h1 id={mode + "-title"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>{title}</h1>
+        <p id={mode + "-name"} className="zen-old-mincho-semibold">{name}</p>
+        <div id={mode + "-counter-group"}>
+          <div id={mode + "-gauge-container"}>
+            <div id={mode + "-background"}>
+              <div id={mode + "-background-top"}></div>
+              <div id={mode + "-background-bottom"}></div>
+              <div id={mode + "-back-gauge"} className={gaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
+              <div id={mode + "-front-gauge"} className={gaugeMode} style={{width: frontGauge + "%"}}></div>
+              <div id={mode + "-frame"}>
+                <div id={mode + "-triangle-tl"}></div>
+                <div id={mode + "-triangle-tr"}></div>
+                <div id={mode + "-triangle-bl"}></div>
+                <div id={mode + "-triangle-br"}></div>
               </div>
             </div>
           </div>
-          <div id="hp-number" className="stalinist-one-regular">
-            <div style={{color: isWeek ? 'red' : 'black'}}>{hp}</div> / {maxHp}
+          <div id={mode + "-hp-number"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>
+            <div style={{color: isWeek ? 'red' : (mode == "fight" ? "black" : 'white')}}>{hp}</div> / {maxHp}
           </div>
         </div>
-        <div id="btns">
-          <div id="hp-group">
+        <div id={mode + "-btns"}>
+          <div id={mode + "-name-group"}>
+            {name != "ビーバーの王、橘紬希" && <> 
+              <p>名前：</p>
+              <input
+                id={mode + "-name-input"}
+                type="text"
+                onChange={changeName}
+                className={ mode == "fight" ? "fight" : "soul" }
+                value={name}
+              ></input>
+            </>}
+          </div>
+          <div id={mode + "-hp-group"}>
             <p>最大HP：</p>
             <input
-              id="hp"
+              id={mode + "-hp"}
               type="number"
               onChange={changeHpNumber}
               onKeyDown={keyDownNumber}
+              className={ mode == "fight" ? "fight" : "soul" }
               value={maxHp}
             ></input>
           </div>
-          <div id="damage-group">
+          <div id={mode + "-damage-group"}>
             <p>受けたダメージ：</p>
             <input
-              id="damage"
+              id={mode + "-damage"}
               type="number"
               onChange={changeDamageNumber}
               onKeyDown={keyDownNumber}
+              className={ mode == "fight" ? "fight" : "soul" }
               value={damage}
             ></input>
             <button
@@ -154,6 +206,22 @@ export default function App() {
               onClick={attack}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
             >攻撃</button>
+          </div>
+          <div>
+            <button
+              id={mode + "-fight"}
+              type="button"
+              onClick={clickFight}
+              disabled={mode == "fight"}
+              className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            >Fight</button>
+            <button
+              id={mode + "-soul"}
+              type="button"
+              onClick={clickSoul}
+              disabled={mode == "soul"}
+              className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            >Soul</button>
         </div>
       </div>
     </main>
@@ -166,6 +234,6 @@ export default function App() {
         </a>
       </p>
     </footer>
-  </>
+    </>
   );
 }

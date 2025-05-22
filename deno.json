@@ -20,6 +20,7 @@
     "@vitejs/plugin-react-swc": "npm:@vitejs/plugin-react-swc@^3.8.0",
     "react": "npm:react@^19.0.0",
     "react-dom": "npm:react-dom@^19.0.0",
+    "react-router-dom": "npm:react-router-dom@^7.6.0",
     "tailwindcss": "npm:tailwindcss@^4.1.7",
     "vite": "npm:vite@^6.1.1"
   }
