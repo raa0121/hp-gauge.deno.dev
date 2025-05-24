@@ -138,7 +138,7 @@ main#fight {
     }
 }
 
-.normal {
+#fight-back-gauge.normal {
     background: linear-gradient(to left, rgba(36, 206, 87, 0.8), rgba(189, 224, 61, 0.8));
     border-color: lightgreen;
 }

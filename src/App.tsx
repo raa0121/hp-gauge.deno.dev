@@ -46,7 +46,6 @@ export default function App() {
       setFadeout("");
       setIsAnimation(false);
     });
-    console.log(query);
 
     setName(query.get('name'));
     if ("fight" == query.get('mode')) {
@@ -55,6 +54,7 @@ export default function App() {
     if ("soul" == query.get('mode')) {
       clickSoul();
     }
+
     const navigationEntries = performance.getEntriesByType("navigation");
     
     if (navigationEntries.length > 0 && navigationEntries[0] instanceof PerformanceNavigationTiming) {
@@ -66,6 +66,17 @@ export default function App() {
           setMaxHp(data.maxHp);
           setHp(data.maxHp);
           setDamage(data.damage);
+          if (data.name) {
+            setName(data.name)
+          }
+          if (data.mode) {
+            if ("fight" == data.mode) {
+              clickFight();
+            }
+            if ("soul" == data.mode) {
+              clickSoul();
+            }
+          }
         }
       }
     }
@@ -112,7 +123,7 @@ export default function App() {
     if (currentTime - damageTime > comboLimit) {
       setBackGauge(hp / maxHp * 100);
     }
-    const newHp = hp < damage ? 0 : hp - damage;
+    const newHp = hp - damage;
     setHp(newHp);
     setFrontGauge(newHp / maxHp * 100);
     setDamageTime(new Date().getTime());
@@ -121,6 +132,7 @@ export default function App() {
     }
     if (isAnimation) {
       setFadeout("");
+      void document.getElementById(mode + "-back-gauge").offsetWidth;
     }
     setFadeout(" fadeout");
   };
@@ -140,7 +152,7 @@ export default function App() {
   }
 
   useBlocker(() => {
-    storage.setUserData({maxHp, damage});
+    storage.setUserData({name, mode, maxHp, damage});
   }, true);
 
   return (

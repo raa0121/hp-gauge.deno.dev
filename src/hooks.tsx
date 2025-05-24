@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 
 export type UserDataType = {
+  name: string | null;
+  mode: string | null;
   maxHp: number;
   damage: number;
 };
