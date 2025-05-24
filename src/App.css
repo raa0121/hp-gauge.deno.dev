@@ -60,7 +60,7 @@ main#fight {
     align-items: center;
 }
 
-#fight-background-top,#background-bottom {
+#fight-background-top,#fight-background-bottom {
     position: absolute;
     z-index: 1;
     width: 100%;
@@ -77,7 +77,7 @@ main#fight {
     background: linear-gradient(to right,rgb(35,35,35),rgb(20,20,20));
 }
 
-#fight-back-gauge,#front-gauge {
+#fight-back-gauge,#fight-front-gauge {
     position: absolute;
     z-index: 2;
     width: 100%;
@@ -138,7 +138,7 @@ main#fight {
     }
 }
 
-#fight-back-gauge.normal {
+#fight-front-gauge.normal {
     background: linear-gradient(to left, rgba(36, 206, 87, 0.8), rgba(189, 224, 61, 0.8));
     border-color: lightgreen;
 }

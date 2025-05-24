@@ -23,7 +23,8 @@ export default function App() {
   const [maxHp, setMaxHp] = useState(100);
   const [hp, setHp] = useState(100);
   const [damage, setDamage] = useState(0);
-  const [gaugeMode, setGaugeMode] = useState('full');
+  const [frontGaugeMode, setFrontGaugeMode] = useState('full');
+  const [backGaugeMode, setBackGaugeMode] = useState('full');
   const [damageTime, setDamageTime] = useState(new Date().getTime());
   const [isAnimation, setIsAnimation] = useState(false);
   const [frontGauge, setFrontGauge] = useState(100);
@@ -38,15 +39,23 @@ export default function App() {
   const query = new URLSearchParams(search);
 
   useEffect(() => {
-    globalThis.addEventListener("animationstart", () => {
+    const animationEnable = () => {
       setIsAnimation(true);
-    });
-    globalThis.addEventListener("animationend", () => {
-      setBackGauge(hp / maxHp * 100)
+    }
+    const animationDisable = () => {
+      setBackGauge(hp / maxHp * 100);
       setFadeout("");
       setIsAnimation(false);
-    });
+    }
+    globalThis.addEventListener("animationstart", animationEnable);
+    globalThis.addEventListener("animationend", animationDisable);
+    return () => {
+      globalThis.removeEventListener("animationstart", animationEnable);
+      globalThis.removeEventListener("animationend", animationDisable);
+    }
+  }, [hp]);
 
+  useEffect(() => {
     setName(query.get('name'));
     if ("fight" == query.get('mode')) {
       clickFight();
@@ -116,15 +125,16 @@ export default function App() {
   };
 
   const attack = () => {
-    if (gaugeMode === "full") {
-      setGaugeMode("normal");
+    if (frontGaugeMode === "full") {
+      setFrontGaugeMode("normal");
+      setBackGaugeMode("");
     }
     const currentTime = new Date().getTime();
+    const newHp = hp - damage;
+    setHp(newHp);
     if (currentTime - damageTime > comboLimit) {
       setBackGauge(hp / maxHp * 100);
     }
-    const newHp = hp - damage;
-    setHp(newHp);
     setFrontGauge(newHp / maxHp * 100);
     setDamageTime(new Date().getTime());
     if (newHp / maxHp * 100 <= 30) {
@@ -165,8 +175,8 @@ export default function App() {
             <div id={mode + "-background"}>
               <div id={mode + "-background-top"}></div>
               <div id={mode + "-background-bottom"}></div>
-              <div id={mode + "-back-gauge"} className={gaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
-              <div id={mode + "-front-gauge"} className={gaugeMode} style={{width: frontGauge + "%"}}></div>
+              <div id={mode + "-back-gauge"} className={backGaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
+              <div id={mode + "-front-gauge"} className={frontGaugeMode} style={{width: frontGauge + "%"}}></div>
               <div id={mode + "-frame"}>
                 <div id={mode + "-triangle-tl"}></div>
                 <div id={mode + "-triangle-tr"}></div>
