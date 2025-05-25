@@ -17,6 +17,15 @@ const ALLOWD = [
   'Backspace',
 ];
 
+type History = {
+  id: number;
+  beforeHp: number;
+  damage: number;
+  newHp: number;
+}
+
+let nextId = 0;
+
 export default function App() {
   const title = "WebHPゲージ"
   const comboLimit = 1000;
@@ -33,6 +42,7 @@ export default function App() {
   const [isWeek, setIsWeek] = useState(false);
   const [mode, setMode] = useState('fight');
   const [name, setName] = useState('');
+  const [history, setHistory] = useState<History[]>([{id: nextId, beforeHp: hp, damage: 0, newHp: hp}]);
   const search = useLocation().search;
   const storage = useSessionStorage();
 
@@ -56,6 +66,7 @@ export default function App() {
   }, [hp]);
 
   useEffect(() => {
+    console.log(history);
     setName(query.get('name'));
     if ("fight" == query.get('mode')) {
       clickFight();
@@ -129,13 +140,18 @@ export default function App() {
       setFrontGaugeMode("normal");
       setBackGaugeMode("");
     }
-    const currentTime = new Date().getTime();
     const newHp = hp - damage;
+    setHistory([...history, {id: ++nextId, beforeHp: hp, damage: damage, newHp: newHp}]);
+    const currentTime = new Date().getTime();
     setHp(newHp);
     if (currentTime - damageTime > comboLimit) {
       setBackGauge(hp / maxHp * 100);
     }
-    setFrontGauge(newHp / maxHp * 100);
+    if (newHp < 0) {
+      setFrontGauge(0);
+    } else {
+      setFrontGauge(newHp / maxHp * 100);
+    }
     setDamageTime(new Date().getTime());
     if (newHp / maxHp * 100 <= 30) {
       setIsWeek(true);
@@ -149,6 +165,7 @@ export default function App() {
 
   const recover = () => {
     const newHp = hp + damage;
+    setHistory([...history, {id: ++nextId, beforeHp: hp, damage: -damage, newHp: newHp}]);
     setHp(newHp);
     setBackGauge(newHp / maxHp * 100);
     setFrontGauge(newHp / maxHp * 100);
@@ -256,6 +273,17 @@ export default function App() {
               onClick={reset}
               className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full w-auto"
             >リセット</button>
+          </div>
+          <div id="history">
+            {history.map((h) => {
+              if (h.id != 0) {
+                if (h.damage > 0) {
+                  return <p key={h.id}>元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}</p>
+                } else {
+                  return <p key={h.id}>元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}</p>
+                }
+              }
+            })}
           </div>
           <div>
             <button
