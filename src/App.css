@@ -260,3 +260,7 @@ input[type="number"].fight {
   border: 1px solid #444;
   border-radius: 4px;
 }
+
+#soul-btns button#reset {
+  width: auto;
+}

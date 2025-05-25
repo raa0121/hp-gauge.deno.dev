@@ -147,6 +147,23 @@ export default function App() {
     setFadeout(" fadeout");
   };
 
+  const recover = () => {
+    const newHp = hp + damage;
+    setHp(newHp);
+    setBackGauge(newHp / maxHp * 100);
+    setFrontGauge(newHp / maxHp * 100);
+    if (newHp / maxHp * 100 > 30) {
+      setIsWeek(false);
+    }
+  }
+
+  const reset = () => {
+    setHp(maxHp);
+    setBackGauge(100);
+    setFrontGauge(100);
+    setIsWeek(false);
+  }
+
   const clickFight = () => {
     document.body.style.backgroundColor = "white";
     document.body.style.color = "black";
@@ -214,7 +231,7 @@ export default function App() {
             ></input>
           </div>
           <div id={mode + "-damage-group"}>
-            <p>受けたダメージ：</p>
+            <p>受ける/回復するダメージ：</p>
             <input
               id={mode + "-damage"}
               type="number"
@@ -228,6 +245,17 @@ export default function App() {
               onClick={attack}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
             >攻撃</button>
+            <button
+              type="button"
+              onClick={recover}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            >回復</button>
+            <button
+              id="reset"
+              type="button"
+              onClick={reset}
+              className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full w-auto"
+            >リセット</button>
           </div>
           <div>
             <button
