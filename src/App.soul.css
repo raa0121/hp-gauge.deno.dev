@@ -172,6 +172,10 @@ main#soul {
     margin-right: 1em;
 }
 
+#soul-btns button#reset {
+  width: auto;
+}
+
 #soul-name-group {
   display: flex;
   align-items: center;
