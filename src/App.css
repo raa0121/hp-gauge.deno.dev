@@ -1,4 +1,15 @@
 @import "tailwindcss";
+@theme {
+  --text-stroke-width: 1px;
+  --text-stroke-color: theme(colors.black);
+}
+
+
+@utility text-shadow {
+  text-shadow: black 1px 1px 3px;
+}
+
+
 html,
 body {
   margin: 0 auto;
@@ -264,4 +275,19 @@ input[type="number"].fight {
   padding: 4px;
   border: 1px solid #444;
   border-radius: 4px;
+  margin-right: 10px;
+}
+
+#fight-setting-group {
+  display: flex;
+  gap: 20px;
+}
+
+#fight-gauge-width-group {
+  align-items: center;
+  display: flex;
+}
+
+#fight-gauge-width {
+  display: flex;
 }

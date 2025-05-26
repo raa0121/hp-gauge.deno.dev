@@ -4,10 +4,6 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useBlocker, useSessionStorage } from "./hooks.tsx";
 
-interface QueryString {
-  [key: string]: string;
-}
-
 const ALLOWD = [
   '-',
   'ArrowLeft',
@@ -16,6 +12,14 @@ const ALLOWD = [
   'ArrowDown',
   'Backspace',
 ];
+
+const colors = [
+  {color: 'white', name: "白"},
+  {color: 'black', name: "黒"},
+  {color: '#a00', name: "赤"},
+  {color: '#0a0', name: "緑"},
+  {color: '#00a', name: "青"},
+]
 
 type History = {
   id: number;
@@ -43,6 +47,8 @@ export default function App() {
   const [mode, setMode] = useState('fight');
   const [name, setName] = useState('');
   const [history, setHistory] = useState<History[]>([{id: nextId, beforeHp: hp, damage: 0, newHp: hp}]);
+  const [gaugeWidth, setGaugeWidth] = useState(800);
+  const [backgroundColor, setBackgroundColor] = useState('white');
   const search = useLocation().search;
   const storage = useSessionStorage();
 
@@ -66,8 +72,10 @@ export default function App() {
   }, [hp]);
 
   useEffect(() => {
-    console.log(history);
-    setName(query.get('name'));
+    const queryName = query.get('name');
+    if (queryName) {
+      setName(queryName);
+    }
     if ("fight" == query.get('mode')) {
       clickFight();
     }
@@ -135,6 +143,29 @@ export default function App() {
     e.preventDefault();
   };
 
+  const changeGaugeWidth = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value, 10);
+    if (isNaN(newValue)) {
+      e.preventDefault();
+      return;
+    }
+    setGaugeWidth(newValue);
+  }
+
+  const changeBackgroudColor = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setBackgroundColor(e.target.value);
+    document.body.style.backgroundColor = e.target.value;
+    if (e.target.value == "white") {
+      document.body.style.color = "black";
+    }
+    if (e.target.value == "black") {
+      document.body.style.color = "white";
+    }
+    if (e.target.value == "#00a") {
+      document.body.style.color = "white";
+    }
+  }
+
   const attack = () => {
     if (frontGaugeMode === "full") {
       setFrontGaugeMode("normal");
@@ -149,6 +180,7 @@ export default function App() {
     }
     if (newHp < 0) {
       setFrontGauge(0);
+      setBackGauge(0);
     } else {
       setFrontGauge(newHp / maxHp * 100);
     }
@@ -158,7 +190,6 @@ export default function App() {
     }
     if (isAnimation) {
       setFadeout("");
-      void document.getElementById(mode + "-back-gauge").offsetWidth;
     }
     setFadeout(" fadeout");
   };
@@ -172,6 +203,10 @@ export default function App() {
     if (newHp / maxHp * 100 > 30) {
       setIsWeek(false);
     }
+    if (newHp == maxHp) {
+      setFrontGaugeMode("full");
+      setBackGaugeMode("full");
+    }
   }
 
   const reset = () => {
@@ -179,12 +214,17 @@ export default function App() {
     setBackGauge(100);
     setFrontGauge(100);
     setIsWeek(false);
+    setFrontGaugeMode("full");
+    setBackGaugeMode("full");
+    nextId = 0;
+    setHistory([{id: nextId, beforeHp: hp, damage: 0, newHp: hp}])
   }
 
   const clickFight = () => {
     document.body.style.backgroundColor = "white";
     document.body.style.color = "black";
     setMode('fight');
+    setGaugeWidth(800);
     query.set('mode', 'fight');
   }
 
@@ -192,6 +232,7 @@ export default function App() {
     setMode('soul');
     document.body.style.backgroundColor = "black";
     document.body.style.color = "white";
+    setGaugeWidth(600);
     query.set('mode', 'soul');
   }
 
@@ -203,9 +244,9 @@ export default function App() {
     <>
       <main id={mode}>
         <h1 id={mode + "-title"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>{title}</h1>
-        <p id={mode + "-name"} className="zen-old-mincho-semibold">{name}</p>
+        <p id={mode + "-name"} className="text-shadow zen-old-mincho-semibold">{name}</p>
         <div id={mode + "-counter-group"}>
-          <div id={mode + "-gauge-container"}>
+          <div id={mode + "-gauge-container"} style={{ maxWidth: gaugeWidth + "px" }}>
             <div id={mode + "-background"}>
               <div id={mode + "-background-top"}></div>
               <div id={mode + "-background-bottom"}></div>
@@ -219,8 +260,8 @@ export default function App() {
               </div>
             </div>
           </div>
-          <div id={mode + "-hp-number"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>
-            <div style={{color: isWeek ? 'red' : (mode == "fight" ? "black" : 'white')}}>{hp}</div> / {maxHp}
+          <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold")}>
+            <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> / {maxHp}
           </div>
         </div>
         <div id={mode + "-btns"}>
@@ -274,16 +315,30 @@ export default function App() {
               className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full w-auto"
             >リセット</button>
           </div>
-          <div id="history">
-            {history.map((h) => {
-              if (h.id != 0) {
-                if (h.damage > 0) {
-                  return <p key={h.id}>元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}</p>
-                } else {
-                  return <p key={h.id}>元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}</p>
-                }
-              }
-            })}
+          <div id={mode + "-setting-group"}>
+            <div id={mode + "-gauge-width-group"}>
+              <p>ゲージ幅(px)：</p>
+              <input
+                id={mode + "-gauge-width"}
+                type="number"
+                onChange={changeGaugeWidth}
+                onKeyDown={keyDownNumber}
+                className={ mode == "fight" ? "fight" : "soul" }
+                value={gaugeWidth}
+              ></input>
+              <p>背景色：</p>
+              <select
+                id={mode + "-background-color"}
+                onChange={changeBackgroudColor}
+                className={ mode == "fight" ? "fight" : "soul" }
+                value={backgroundColor}
+                defaultValue={ mode == "fight" ? "white" : "black" }
+              >
+                {colors.map((color) => (
+                  <option key={color.color} value={color.color}>{color.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div>
             <button
@@ -300,18 +355,30 @@ export default function App() {
               disabled={mode == "soul"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
             >Soul</button>
+          </div>
         </div>
-      </div>
-    </main>
-    <footer>
-      <p>&copy; 2025 raa0121</p>
-      <p>
-        Inspired by{" "}
-        <a href="https://web-breeze.net/sf5-life-gauge/" target="_blank">
-          【HTML/CSS/JS】ストリートファイターⅤ風のライフゲージ - 微風 on the web...
-        </a>
-      </p>
-    </footer>
+
+        <div id="history">
+          {history.map((h) => {
+            if (h.id != 0) {
+              if (h.damage > 0) {
+                return <p key={h.id}>元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}</p>
+              } else {
+                return <p key={h.id}>元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}</p>
+              }
+            }
+          })}
+        </div>
+      </main>
+      <footer>
+        <p>&copy; 2025 raa0121</p>
+        <p>
+          Inspired by{" "}
+          <a href="https://web-breeze.net/sf5-life-gauge/" target="_blank">
+            【HTML/CSS/JS】ストリートファイターⅤ風のライフゲージ - 微風 on the web...
+          </a>
+        </p>
+      </footer>
     </>
   );
 }
