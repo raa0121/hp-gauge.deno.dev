@@ -1,8 +1,8 @@
 @font-face {
   font-family: "PKMN Struct Number";
-  src: url("pkmn_s_num.eot?")  format('eot'),
-       url("pkmn_s_num.woff2") format('woff2'),
-       url("pkmn_s_num.woff")  format('woff');
+  src: url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.eot?")  format('eot'),
+       url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff2") format('woff2'),
+       url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff")  format('woff');
 }
 #monster-box * {
   box-sizing: border-box;
