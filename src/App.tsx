@@ -1,5 +1,6 @@
 import './App.css';
 import './App.soul.css';
+import './App.monster.css';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useBlocker, useSessionStorage } from "./hooks.tsx";
@@ -82,6 +83,9 @@ export default function App() {
     if ("soul" == query.get('mode')) {
       clickSoul();
     }
+    if ("monster" == query.get('mode')) {
+      clickMonster();
+    }
 
     const navigationEntries = performance.getEntriesByType("navigation");
     
@@ -103,6 +107,9 @@ export default function App() {
             }
             if ("soul" == data.mode) {
               clickSoul();
+            }
+            if ("monster" == data.mode) {
+              clickMonster();
             }
           }
         }
@@ -235,6 +242,11 @@ export default function App() {
     setGaugeWidth(600);
     query.set('mode', 'soul');
   }
+  const clickMonster = () => {
+    setMode('monster');
+    setGaugeWidth(100);
+    query.set('mode', 'monster');
+  }
 
   useBlocker(() => {
     storage.setUserData({name, mode, maxHp, damage});
@@ -244,25 +256,35 @@ export default function App() {
     <>
       <main id={mode}>
         <h1 id={mode + "-title"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>{title}</h1>
-        <p id={mode + "-name"} className="text-shadow zen-old-mincho-semibold">{name}</p>
-        <div id={mode + "-counter-group"}>
-          <div id={mode + "-gauge-container"} style={{ maxWidth: gaugeWidth + "px" }}>
-            <div id={mode + "-background"}>
-              <div id={mode + "-background-top"}></div>
-              <div id={mode + "-background-bottom"}></div>
-              <div id={mode + "-back-gauge"} className={backGaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
-              <div id={mode + "-front-gauge"} className={frontGaugeMode} style={{width: frontGauge + "%"}}></div>
-              <div id={mode + "-frame"}>
-                <div id={mode + "-triangle-tl"}></div>
-                <div id={mode + "-triangle-tr"}></div>
-                <div id={mode + "-triangle-bl"}></div>
-                <div id={mode + "-triangle-br"}></div>
+        <div id={mode + "-box"}>
+          <p id={mode + "-name"} className="text-shadow">{name}</p>
+          <div id={mode + "-counter-group"}>
+            {mode == 'monster' ? <div id={mode + "-hp-label"}>HP:</div> : ""}
+            <div id={mode + "-gauge-container"} style={{ maxWidth: gaugeWidth + "px" }}>
+              <div id={mode + "-background"}>
+                <div id={mode + "-background-top"}></div>
+                <div id={mode + "-background-bottom"}></div>
+                <div id={mode + "-back-gauge"} className={backGaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
+                <div id={mode + "-front-gauge"} className={frontGaugeMode} style={{width: frontGauge + "%"}}></div>
+                <div id={mode + "-frame"}>
+                  <div id={mode + "-triangle-tl"}></div>
+                  <div id={mode + "-triangle-tr"}></div>
+                  <div id={mode + "-triangle-bl"}></div>
+                  <div id={mode + "-triangle-br"}></div>
+                </div>
               </div>
             </div>
+            {mode != 'monster' ?
+              <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold")}>
+                <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> / {maxHp}
+              </div>
+          : ''}
           </div>
-          <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold")}>
-            <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> / {maxHp}
-          </div>
+          {mode == 'monster' ?
+            <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : (mode == "soul" ? "zen-old-mincho-semibold" : ""))}>
+              <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> /{mode == "monster" ? '' : " " }{maxHp}
+            </div>
+          : ''}
         </div>
         <div id={mode + "-btns"}>
           <div id={mode + "-name-group"}>
@@ -272,7 +294,7 @@ export default function App() {
                 id={mode + "-name-input"}
                 type="text"
                 onChange={changeName}
-                className={ mode == "fight" ? "fight" : "soul" }
+                className={mode}
                 value={name}
               ></input>
             </>}
@@ -342,19 +364,26 @@ export default function App() {
           </div>
           <div>
             <button
-              id={mode + "-fight"}
+              id="button-fight"
               type="button"
               onClick={clickFight}
               disabled={mode == "fight"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
             >Fight</button>
             <button
-              id={mode + "-soul"}
+              id="button-soul"
               type="button"
               onClick={clickSoul}
               disabled={mode == "soul"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
             >Soul</button>
+            <button
+              id="button-monster"
+              type="button"
+              onClick={clickMonster}
+              disabled={mode == "monster"}
+              className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            >Monster</button>
           </div>
         </div>
 
@@ -378,6 +407,37 @@ export default function App() {
             【HTML/CSS/JS】ストリートファイターⅤ風のライフゲージ - 微風 on the web...
           </a>
         </p>
+        <div id="license-group">
+          <p>monsterモードのHP表示には、<a href="https://github.com/nue-of-k/pkmn/" target="_blank">PKMN Structフォント</a>から数字と{"/"}を抽出し、Webフォントに変換したものを利用しています。</p>
+          <details>
+            <summary>ライセンス全文</summary>
+<p id="license">
+PKMN Strict<br />
+<br />
+MIT License<br />
+<br />
+Copyright © 2009-2015 鵺 (Nue)<br />
+<br />
+Permission is hereby granted, free of charge, to any person obtaining a copy<br />
+of this software and associated documentation files (the "Software"), to deal<br />
+in the Software without restriction, including without limitation the rights<br />
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell<br />
+copies of the Software, and to permit persons to whom the Software is<br />
+furnished to do so, subject to the following conditions:<br />
+<br />
+The above copyright notice and this permission notice shall be included in all<br />
+copies or substantial portions of the Software.<br />
+<br />
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR<br />
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,<br />
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE<br />
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER<br />
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM<br />,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE<br />
+SOFTWARE.
+</p>
+          </details>
+        </div>
       </footer>
     </>
   );

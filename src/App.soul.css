@@ -168,7 +168,6 @@ main#soul {
   flex-direction: column;
 }
 #soul-btns button {
-  width: 5em;
   margin-right: 1em;
 }
 
@@ -202,6 +201,12 @@ input[type="number"].soul {
   margin-right: 10px;
 }
 
+input[type="text"].soul {
+  padding: 4px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin-right: 10px;
+}
 footer {
   position: fixed;
   bottom: 0;
