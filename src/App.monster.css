@@ -1,8 +1,10 @@
 @font-face {
   font-family: "PKMN Struct Number";
-  src: url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.eot?")  format('eot'),
-       url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff2") format('woff2'),
-       url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff")  format('woff');
+  src:
+    url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.eot?") format("eot"),
+    url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff2")
+    format("woff2"),
+    url("https://d4d4jc6ncwg7e.cloudfront.net/pkmn_s_num.woff") format("woff");
 }
 #monster-box * {
   box-sizing: border-box;
@@ -74,10 +76,10 @@
   font-size: 14px;
   text-align: right;
   padding-right: 10px;
-  font-family: "PKMN Struct Number"
+  font-family: "PKMN Struct Number";
 }
 #monster-hp-number div {
-  font-family: "PKMN Struct Number"
+  font-family: "PKMN Struct Number";
 }
 /* 入力とボタンのレイアウト */
 #monster-btns {

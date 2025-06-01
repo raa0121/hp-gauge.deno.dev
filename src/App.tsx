@@ -1,55 +1,60 @@
-import './App.css';
-import './App.soul.css';
-import './App.monster.css';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import "./App.css";
+import "./App.soul.css";
+import "./App.monster.css";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useBlocker, useSessionStorage } from "./hooks.tsx";
 
 const ALLOWD = [
-  '-',
-  'ArrowLeft',
-  'ArrowRight',
-  'ArrowUp',
-  'ArrowDown',
-  'Backspace',
+  "-",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+  "Backspace",
 ];
 
 const colors = [
-  {color: 'white', name: "白"},
-  {color: 'black', name: "黒"},
-  {color: '#a00', name: "赤"},
-  {color: '#0a0', name: "緑"},
-  {color: '#00a', name: "青"},
-]
+  { color: "white", name: "白" },
+  { color: "black", name: "黒" },
+  { color: "#a00", name: "赤" },
+  { color: "#0a0", name: "緑" },
+  { color: "#00a", name: "青" },
+];
 
 type History = {
   id: number;
   beforeHp: number;
   damage: number;
   newHp: number;
-}
+};
 
 let nextId = 0;
 
 export default function App() {
-  const title = "WebHPゲージ"
+  const title = "WebHPゲージ";
   const comboLimit = 1000;
   const [maxHp, setMaxHp] = useState(100);
   const [hp, setHp] = useState(100);
   const [damage, setDamage] = useState(0);
-  const [frontGaugeMode, setFrontGaugeMode] = useState('full');
-  const [backGaugeMode, setBackGaugeMode] = useState('full');
+  const [frontGaugeMode, setFrontGaugeMode] = useState("full");
+  const [backGaugeMode, setBackGaugeMode] = useState("full");
   const [damageTime, setDamageTime] = useState(new Date().getTime());
   const [isAnimation, setIsAnimation] = useState(false);
   const [frontGauge, setFrontGauge] = useState(100);
   const [backGauge, setBackGauge] = useState(100);
-  const [fadeout, setFadeout] = useState('');
+  const [fadeout, setFadeout] = useState("");
   const [isWeek, setIsWeek] = useState(false);
-  const [mode, setMode] = useState('fight');
-  const [name, setName] = useState('');
-  const [history, setHistory] = useState<History[]>([{id: nextId, beforeHp: hp, damage: 0, newHp: hp}]);
+  const [mode, setMode] = useState("fight");
+  const [name, setName] = useState("");
+  const [history, setHistory] = useState<History[]>([{
+    id: nextId,
+    beforeHp: hp,
+    damage: 0,
+    newHp: hp,
+  }]);
   const [gaugeWidth, setGaugeWidth] = useState(800);
-  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [backgroundColor, setBackgroundColor] = useState("white");
   const search = useLocation().search;
   const storage = useSessionStorage();
 
@@ -58,48 +63,51 @@ export default function App() {
   useEffect(() => {
     const animationEnable = () => {
       setIsAnimation(true);
-    }
+    };
     const animationDisable = () => {
       setBackGauge(hp / maxHp * 100);
       setFadeout("");
       setIsAnimation(false);
-    }
+    };
     globalThis.addEventListener("animationstart", animationEnable);
     globalThis.addEventListener("animationend", animationDisable);
     return () => {
       globalThis.removeEventListener("animationstart", animationEnable);
       globalThis.removeEventListener("animationend", animationDisable);
-    }
+    };
   }, [hp]);
 
   useEffect(() => {
-    const queryName = query.get('name');
+    const queryName = query.get("name");
     if (queryName) {
       setName(queryName);
     }
-    if ("fight" == query.get('mode')) {
+    if ("fight" == query.get("mode")) {
       clickFight();
     }
-    if ("soul" == query.get('mode')) {
+    if ("soul" == query.get("mode")) {
       clickSoul();
     }
-    if ("monster" == query.get('mode')) {
+    if ("monster" == query.get("mode")) {
       clickMonster();
     }
 
     const navigationEntries = performance.getEntriesByType("navigation");
-    
-    if (navigationEntries.length > 0 && navigationEntries[0] instanceof PerformanceNavigationTiming) {
+
+    if (
+      navigationEntries.length > 0 &&
+      navigationEntries[0] instanceof PerformanceNavigationTiming
+    ) {
       const navigationType = navigationEntries[0].type;
-    
-      if (navigationType === 'reload') {
+
+      if (navigationType === "reload") {
         const data = storage.getUserData();
         if (data !== undefined) {
           setMaxHp(data.maxHp);
           setHp(data.maxHp);
           setDamage(data.damage);
           if (data.name) {
-            setName(data.name)
+            setName(data.name);
           }
           if (data.mode) {
             if ("fight" == data.mode) {
@@ -119,7 +127,7 @@ export default function App() {
 
   const changeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
-  }
+  };
   const changeHpNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value, 10);
     if (isNaN(newValue)) {
@@ -157,7 +165,7 @@ export default function App() {
       return;
     }
     setGaugeWidth(newValue);
-  }
+  };
 
   const changeBackgroudColor = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setBackgroundColor(e.target.value);
@@ -171,7 +179,7 @@ export default function App() {
     if (e.target.value == "#00a") {
       document.body.style.color = "white";
     }
-  }
+  };
 
   const attack = () => {
     if (frontGaugeMode === "full") {
@@ -179,7 +187,12 @@ export default function App() {
       setBackGaugeMode("");
     }
     const newHp = hp - damage;
-    setHistory([...history, {id: ++nextId, beforeHp: hp, damage: damage, newHp: newHp}]);
+    setHistory([...history, {
+      id: ++nextId,
+      beforeHp: hp,
+      damage: damage,
+      newHp: newHp,
+    }]);
     const currentTime = new Date().getTime();
     setHp(newHp);
     if (currentTime - damageTime > comboLimit) {
@@ -203,7 +216,12 @@ export default function App() {
 
   const recover = () => {
     const newHp = hp + damage;
-    setHistory([...history, {id: ++nextId, beforeHp: hp, damage: -damage, newHp: newHp}]);
+    setHistory([...history, {
+      id: ++nextId,
+      beforeHp: hp,
+      damage: -damage,
+      newHp: newHp,
+    }]);
     setHp(newHp);
     setBackGauge(newHp / maxHp * 100);
     setFrontGauge(newHp / maxHp * 100);
@@ -214,7 +232,7 @@ export default function App() {
       setFrontGaugeMode("full");
       setBackGaugeMode("full");
     }
-  }
+  };
 
   const reset = () => {
     setHp(maxHp);
@@ -224,48 +242,70 @@ export default function App() {
     setFrontGaugeMode("full");
     setBackGaugeMode("full");
     nextId = 0;
-    setHistory([{id: nextId, beforeHp: hp, damage: 0, newHp: hp}])
-  }
+    setHistory([{ id: nextId, beforeHp: hp, damage: 0, newHp: hp }]);
+  };
 
   const clickFight = () => {
     document.body.style.backgroundColor = "white";
     document.body.style.color = "black";
-    setMode('fight');
+    setMode("fight");
     setGaugeWidth(800);
-    query.set('mode', 'fight');
-  }
+    query.set("mode", "fight");
+  };
 
   const clickSoul = () => {
-    setMode('soul');
+    setMode("soul");
     document.body.style.backgroundColor = "black";
     document.body.style.color = "white";
     setGaugeWidth(600);
-    query.set('mode', 'soul');
-  }
+    query.set("mode", "soul");
+  };
   const clickMonster = () => {
-    setMode('monster');
+    setMode("monster");
     setGaugeWidth(100);
-    query.set('mode', 'monster');
-  }
+    query.set("mode", "monster");
+  };
 
   useBlocker(() => {
-    storage.setUserData({name, mode, maxHp, damage});
+    storage.setUserData({ name, mode, maxHp, damage });
   }, true);
 
   return (
     <>
       <main id={mode}>
-        <h1 id={mode + "-title"} className={mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold"}>{title}</h1>
+        <h1
+          id={mode + "-title"}
+          className={mode == "fight"
+            ? "stalinist-one-regular"
+            : "zen-old-mincho-semibold"}
+        >
+          {title}
+        </h1>
         <div id={mode + "-box"}>
           <p id={mode + "-name"} className="text-shadow">{name}</p>
           <div id={mode + "-counter-group"}>
-            {mode == 'monster' ? <div id={mode + "-hp-label"}>HP:</div> : ""}
-            <div id={mode + "-gauge-container"} style={{ maxWidth: gaugeWidth + "px" }}>
+            {mode == "monster" ? <div id={mode + "-hp-label"}>HP:</div> : ""}
+            <div
+              id={mode + "-gauge-container"}
+              style={{ maxWidth: gaugeWidth + "px" }}
+            >
               <div id={mode + "-background"}>
                 <div id={mode + "-background-top"}></div>
                 <div id={mode + "-background-bottom"}></div>
-                <div id={mode + "-back-gauge"} className={backGaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
-                <div id={mode + "-front-gauge"} className={frontGaugeMode + ((mode == 'monster' && isWeek == true) ? " hp-low" : "")} style={{width: frontGauge + "%"}}></div>
+                <div
+                  id={mode + "-back-gauge"}
+                  className={backGaugeMode + fadeout}
+                  style={{ width: backGauge + "%" }}
+                >
+                </div>
+                <div
+                  id={mode + "-front-gauge"}
+                  className={frontGaugeMode + (
+                    (mode == "monster" && isWeek == true) ? " hp-low" : ""
+                  )}
+                  style={{ width: frontGauge + "%" }}
+                >
+                </div>
                 <div id={mode + "-frame"}>
                   <div id={mode + "-triangle-tl"}></div>
                   <div id={mode + "-triangle-tr"}></div>
@@ -274,30 +314,50 @@ export default function App() {
                 </div>
               </div>
             </div>
-            {mode != 'monster' ?
-              <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : "zen-old-mincho-semibold")}>
-                <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> / {maxHp}
-              </div>
-          : ''}
+            {mode != "monster"
+              ? (
+                <div
+                  id={mode + "-hp-number"}
+                  className={"text-shadow " + (mode == "fight"
+                    ? "stalinist-one-regular"
+                    : "zen-old-mincho-semibold")}
+                >
+                  <div style={{ color: isWeek ? "red" : "" }}>{hp}</div> /{" "}
+                  {maxHp}
+                </div>
+              )
+              : ""}
           </div>
-          {mode == 'monster' ?
-            <div id={mode + "-hp-number"} className={"text-shadow " + (mode == "fight" ? "stalinist-one-regular" : (mode == "soul" ? "zen-old-mincho-semibold" : ""))}>
-              <div style={{color: isWeek ? 'red' : ""}}>{hp}</div> /{mode == "monster" ? '' : " " }{maxHp}
-            </div>
-          : ''}
+          {mode == "monster"
+            ? (
+              <div
+                id={mode + "-hp-number"}
+                className={"text-shadow " + (mode == "fight"
+                  ? "stalinist-one-regular"
+                  : (mode == "soul" ? "zen-old-mincho-semibold" : ""))}
+              >
+                <div style={{ color: isWeek ? "red" : "" }}>{hp}</div>{" "}
+                /{mode == "monster" ? "" : " "}
+                {maxHp}
+              </div>
+            )
+            : ""}
         </div>
         <div id={mode + "-btns"}>
           <div id={mode + "-name-group"}>
-            {name != "ビーバーの王、橘紬希" && <> 
-              <p>名前：</p>
-              <input
-                id={mode + "-name-input"}
-                type="text"
-                onChange={changeName}
-                className={mode}
-                value={name}
-              ></input>
-            </>}
+            {name != "ビーバーの王、橘紬希" && (
+              <>
+                <p>名前：</p>
+                <input
+                  id={mode + "-name-input"}
+                  type="text"
+                  onChange={changeName}
+                  className={mode}
+                  value={name}
+                >
+                </input>
+              </>
+            )}
           </div>
           <div id={mode + "-hp-group"}>
             <p>最大HP：</p>
@@ -306,9 +366,10 @@ export default function App() {
               type="number"
               onChange={changeHpNumber}
               onKeyDown={keyDownNumber}
-              className={ mode == "fight" ? "fight" : "soul" }
+              className={mode == "fight" ? "fight" : "soul"}
               value={maxHp}
-            ></input>
+            >
+            </input>
           </div>
           <div id={mode + "-damage-group"}>
             <p>受ける/回復するダメージ：</p>
@@ -317,25 +378,32 @@ export default function App() {
               type="number"
               onChange={changeDamageNumber}
               onKeyDown={keyDownNumber}
-              className={ mode == "fight" ? "fight" : "soul" }
+              className={mode == "fight" ? "fight" : "soul"}
               value={damage}
-            ></input>
+            >
+            </input>
             <button
               type="button"
               onClick={attack}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
-            >攻撃</button>
+            >
+              攻撃
+            </button>
             <button
               type="button"
               onClick={recover}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            >回復</button>
+            >
+              回復
+            </button>
             <button
               id="reset"
               type="button"
               onClick={reset}
               className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full w-auto"
-            >リセット</button>
+            >
+              リセット
+            </button>
           </div>
           <div id={mode + "-setting-group"}>
             <div id={mode + "-gauge-width-group"}>
@@ -345,19 +413,22 @@ export default function App() {
                 type="number"
                 onChange={changeGaugeWidth}
                 onKeyDown={keyDownNumber}
-                className={ mode == "fight" ? "fight" : "soul" }
+                className={mode == "fight" ? "fight" : "soul"}
                 value={gaugeWidth}
-              ></input>
+              >
+              </input>
               <p>背景色：</p>
               <select
                 id={mode + "-background-color"}
                 onChange={changeBackgroudColor}
-                className={ mode == "fight" ? "fight" : "soul" }
+                className={mode == "fight" ? "fight" : "soul"}
                 value={backgroundColor}
-                defaultValue={ mode == "fight" ? "white" : "black" }
+                defaultValue={mode == "fight" ? "white" : "black"}
               >
                 {colors.map((color) => (
-                  <option key={color.color} value={color.color}>{color.name}</option>
+                  <option key={color.color} value={color.color}>
+                    {color.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -369,21 +440,27 @@ export default function App() {
               onClick={clickFight}
               disabled={mode == "fight"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
-            >Fight</button>
+            >
+              Fight
+            </button>
             <button
               id="button-soul"
               type="button"
               onClick={clickSoul}
               disabled={mode == "soul"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
-            >Soul</button>
+            >
+              Soul
+            </button>
             <button
               id="button-monster"
               type="button"
               onClick={clickMonster}
               disabled={mode == "monster"}
               className="bg-gray-400 hover:bg-gray-600 disabled:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
-            >Monster</button>
+            >
+              Monster
+            </button>
           </div>
         </div>
 
@@ -391,9 +468,17 @@ export default function App() {
           {history.map((h) => {
             if (h.id != 0) {
               if (h.damage > 0) {
-                return <p key={h.id}>元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}</p>
+                return (
+                  <p key={h.id}>
+                    元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}
+                  </p>
+                );
               } else {
-                return <p key={h.id}>元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}</p>
+                return (
+                  <p key={h.id}>
+                    元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}
+                  </p>
+                );
               }
             }
           })}
@@ -404,38 +489,57 @@ export default function App() {
         <p>
           Inspired by{" "}
           <a href="https://web-breeze.net/sf5-life-gauge/" target="_blank">
-            【HTML/CSS/JS】ストリートファイターⅤ風のライフゲージ - 微風 on the web...
+            【HTML/CSS/JS】ストリートファイターⅤ風のライフゲージ - 微風 on the
+            web...
           </a>
         </p>
         <div id="license-group">
-          <p>monsterモードのHP表示には、<a href="https://github.com/nue-of-k/pkmn/" target="_blank">PKMN Structフォント</a>から数字と{"/"}を抽出し、Webフォントに変換したものを利用しています。</p>
+          <p>
+            monsterモードのHP表示には、<a
+              href="https://github.com/nue-of-k/pkmn/"
+              target="_blank"
+            >
+              PKMN Structフォント
+            </a>から数字と{"/"}を抽出し、Webフォントに変換したものを利用しています。
+          </p>
           <details>
             <summary>ライセンス全文</summary>
-<p id="license">
-PKMN Strict<br />
-<br />
-MIT License<br />
-<br />
-Copyright © 2009-2015 鵺 (Nue)<br />
-<br />
-Permission is hereby granted, free of charge, to any person obtaining a copy<br />
-of this software and associated documentation files (the "Software"), to deal<br />
-in the Software without restriction, including without limitation the rights<br />
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell<br />
-copies of the Software, and to permit persons to whom the Software is<br />
-furnished to do so, subject to the following conditions:<br />
-<br />
-The above copyright notice and this permission notice shall be included in all<br />
-copies or substantial portions of the Software.<br />
-<br />
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR<br />
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,<br />
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE<br />
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER<br />
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM<br />,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE<br />
-SOFTWARE.
-</p>
+            <p id="license">
+              PKMN Strict<br />
+              <br />
+              MIT License<br />
+              <br />
+              Copyright © 2009-2015 鵺 (Nue)<br />
+              <br />
+              Permission is hereby granted, free of charge, to any person
+              obtaining a copy<br />
+              of this software and associated documentation files (the
+              "Software"), to deal<br />
+              in the Software without restriction, including without limitation
+              the rights<br />
+              to use, copy, modify, merge, publish, distribute, sublicense,
+              and/or sell<br />
+              copies of the Software, and to permit persons to whom the Software
+              is<br />
+              furnished to do so, subject to the following conditions:<br />
+              <br />
+              The above copyright notice and this permission notice shall be
+              included in all<br />
+              copies or substantial portions of the Software.<br />
+              <br />
+              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+              EXPRESS OR<br />
+              IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+              MERCHANTABILITY,<br />
+              FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+              SHALL THE<br />
+              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+              OTHER<br />
+              LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+              ARISING FROM<br />, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+              THE USE OR OTHER DEALINGS IN THE<br />
+              SOFTWARE.
+            </p>
           </details>
         </div>
       </footer>

@@ -21,7 +21,7 @@ h1 {
 
 /* 画面全体背景など */
 body {
-  font-family: 'Georgia', serif;
+  font-family: "Georgia", serif;
   display: flex;
   text-align: center;
   justify-content: center;
@@ -85,15 +85,14 @@ main#soul {
 #soul-back-gauge {
   position: absolute;
   height: 100%;
-  background-color: #927C0C;
+  background-color: #927c0c;
   z-index: 1;
 }
 
 #soul-front-gauge.normal {
-    background-color: rgba(146, 124, 12, 0.8);
-    border-color: white;
+  background-color: rgba(146, 124, 12, 0.8);
+  border-color: white;
 }
-
 
 /* 現在HPゲージ */
 #soul-front-gauge {
