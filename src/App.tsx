@@ -354,8 +354,7 @@ export default function App() {
                   onChange={changeName}
                   className={mode}
                   value={name}
-                >
-                </input>
+                />
               </>
             )}
           </div>
@@ -368,8 +367,7 @@ export default function App() {
               onKeyDown={keyDownNumber}
               className={mode == "fight" ? "fight" : "soul"}
               value={maxHp}
-            >
-            </input>
+            />
           </div>
           <div id={mode + "-damage-group"}>
             <p>受ける/回復するダメージ：</p>
@@ -380,8 +378,7 @@ export default function App() {
               onKeyDown={keyDownNumber}
               className={mode == "fight" ? "fight" : "soul"}
               value={damage}
-            >
-            </input>
+            />
             <button
               type="button"
               onClick={attack}
@@ -415,8 +412,7 @@ export default function App() {
                 onKeyDown={keyDownNumber}
                 className={mode == "fight" ? "fight" : "soul"}
                 value={gaugeWidth}
-              >
-              </input>
+              />
               <p>背景色：</p>
               <select
                 id={mode + "-background-color"}
