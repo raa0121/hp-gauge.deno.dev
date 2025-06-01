@@ -265,7 +265,7 @@ export default function App() {
                 <div id={mode + "-background-top"}></div>
                 <div id={mode + "-background-bottom"}></div>
                 <div id={mode + "-back-gauge"} className={backGaugeMode + fadeout} style={{width: backGauge + "%"}}></div>
-                <div id={mode + "-front-gauge"} className={frontGaugeMode} style={{width: frontGauge + "%"}}></div>
+                <div id={mode + "-front-gauge"} className={frontGaugeMode + ((mode == 'monster' && isWeek == true) ? " hp-low" : "")} style={{width: frontGauge + "%"}}></div>
                 <div id={mode + "-frame"}>
                   <div id={mode + "-triangle-tl"}></div>
                   <div id={mode + "-triangle-tr"}></div>

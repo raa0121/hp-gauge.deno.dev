@@ -144,3 +144,7 @@ input[type="text"].monster {
   border-radius: 4px;
   margin-right: 10px;
 }
+
+#monster-front-gauge.hp-low {
+  background: #f85888;
+}
