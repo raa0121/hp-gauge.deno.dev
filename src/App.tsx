@@ -492,7 +492,7 @@ export default function App() {
               target="_blank"
             >
               PKMN Structフォント
-            </a>から数字と{"/"}を抽出し、Webフォントに変換したものを利用しています。
+            </a>から数字と{"/"}と{"-"}(マイナス)を抽出し、Webフォントに変換したものを利用しています。
           </p>
           <details>
             <summary>ライセンス全文</summary>
