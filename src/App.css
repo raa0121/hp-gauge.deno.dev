@@ -316,3 +316,7 @@ input[type="text"].fight {
 #fight-gauge-width {
   display: flex;
 }
+
+#history {
+  width: 100%;
+}

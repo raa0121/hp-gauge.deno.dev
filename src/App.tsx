@@ -460,25 +460,21 @@ export default function App() {
           </div>
         </div>
 
-        <div id="history">
-          {history.map((h) => {
+        <textarea
+          id="history"
+          value={history.map((h) => {
             if (h.id != 0) {
               if (h.damage > 0) {
-                return (
-                  <p key={h.id}>
-                    元HP:{h.beforeHp} ダメージ:{h.damage} 変更後HP:{h.newHp}
-                  </p>
-                );
+                return `元HP:${h.beforeHp} ダメージ:${h.damage} 変更後HP:${h.newHp}`;
               } else {
-                return (
-                  <p key={h.id}>
-                    元HP:{h.beforeHp} 回復量:{-1 * h.damage} 変更後HP:{h.newHp}
-                  </p>
-                );
+                return `元HP:${h.beforeHp} 回復量:${
+                  -1 * h.damage
+                } 変更後HP:${h.newHp}`;
               }
             }
-          })}
-        </div>
+          }).join("\n").trimStart()}
+        >
+        </textarea>
       </main>
       <footer>
         <p>&copy; 2025 raa0121</p>
